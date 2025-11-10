@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 Pedido Especial 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: linear-gradient(45deg, #272829, #595775, #375970, #438591);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            position: relative;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Corações flutuantes */
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 50px;
+            animation: float 6s ease-in infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(49, 48, 48, 0.95);
+            padding: 60px 70px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 700px;
+            height: 700px;
+            z-index: 2;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Texto rolante - Créditos */
+        .creditos-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .creditos {
+            position: absolute;
+            width: 90%;
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 22px;
+            line-height: 1.8;
+            animation: rolar 20s linear forwards;
+            bottom: -100%;
+        }
+
+        @keyframes rolar {
+            0% {
+                bottom: -100%;
+            }
+            100% {
+                bottom: 100%;
+            }
+        }
+
+        .creditos p {
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .creditos .destaque {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 40px;
+            color: #e74c3c;
+        }
+
+        /* Conteúdo principal - Pergunta */
+        .conteudo-principal {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .conteudo-principal.ativo {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            color: #ff6b6b;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .buttons {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+
+        #btnSim {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            z-index: 10;
+            position: relative;
+        }
+
+        #btnSim:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        #btnNao {
+            background: #3b3d3d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            position: fixed;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        #btnNao.inicial {
+            position: relative;
+        }
+
+        .message {
+            display: none;
+            margin-top: 30px;
+            font-size: 24px;
+            color: #ff6b6b;
+            font-weight: bold;
+            animation: celebration 1s ease-in-out;
+            line-height: 1.8;
+        }
+
+        .message .linha1 {
+            white-space: nowrap;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .message .linha2 {
+            white-space: nowrap;
+            display: block;
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.2) rotate(-5deg); }
+            75% { transform: scale(1.2) rotate(5deg); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                min-width: auto;
+                width: 90%;
+                padding: 40px 30px;
+            }
+            
+            h1 {
+                font-size: 2em;
+                white-space: normal;
+            }
+
+            .message {
+                font-size: 18px;
+            }
+
+            .creditos {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+    
+    <div class="container">
+        <!-- Créditos Rolantes -->
+        <div class="creditos-container" id="creditosContainer">
+            <div class="creditos">
+                <p>Nunca pensei que me apaixonaria tão rapidamente por alguém quanto me apaixonei por você.</p>
+                <p>É difícil até de explicar, sinto que faltam palavras que possam transmitir tudo o que você tem me feito sentir!</p>
+                <p>Agradeço a Deus todos os dias por ter te colocado na minha vida, naquele 18 de outubro, que não era nem pra eu estar lá...</p>
+                <p>Mesmo com a distância, quando eu falo com você, parece que estamos pertinho, a saudade dói e o coração aperta, mas só de ouvir sua voz já me sinto muito mais feliz.</p>
+                <p>Não sei o que Deus tem pra gente, mas eu quero descobrir junto com você...</p>
+                <p class="destaque">Isso é tudo muito bonito... mas a pergunta que não quer calar, é.........</p>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal - Pergunta -->
+        <div class="conteudo-principal" id="conteudoPrincipal">
+            <div class="emoji">💖</div>
+            <h1>Quer namorar comigo?</h1>
+            
+            <div class="buttons" id="buttonsContainer">
+                <button id="btnSim" onclick="aceitou()">Sim! 💕</button>
+                <button id="btnNao" onmouseover="fugir()" onclick="fugir()">Não</button>
+            </div>
+            
+            <div class="message" id="message">
+                <span class="linha1">🎉 😎EU SEI! EU SOU IRRESISTIVEL!😎 🎉</span>
+               <!-- <span class="linha2">👩🏻‍❤️‍💋‍👨🏽 Agora somos um casal! 👩🏻‍❤️‍💋‍👨🏽</span> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Criar corações flutuantes
+        function criarCoracao() {
+            const hearts = document.getElementById('hearts');
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            heart.style.fontSize = (Math.random() * 30 + 40) + 'px';
+            hearts.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 6000);
+        }
+
+        // Criar corações continuamente
+        setInterval(criarCoracao, 300);
+
+        // Controle dos créditos e transição
+        setTimeout(() => {
+            document.getElementById('creditosContainer').style.display = 'none';
+            document.getElementById('conteudoPrincipal').classList.add('ativo');
+        }, 20000); // 20 segundos - duração da animação dos créditos
+
+        let tentativas = 0;
+        const btnNao = document.getElementById('btnNao');
+        const btnSim = document.getElementById('btnSim');
+
+        // Botão "Não" começa em posição relativa (abaixo do Sim)
+        btnNao.classList.add('inicial');
+
+        // Função para fazer o botão "Não" fugir
+        function fugir() {
+            tentativas++;
+            
+            // Na primeira tentativa, mudar para position fixed
+            if (tentativas === 1) {
+                const btnRect = btnNao.getBoundingClientRect();
+                btnNao.classList.remove('inicial');
+                btnNao.style.left = btnRect.left + 'px';
+                btnNao.style.top = btnRect.top + 'px';
+            }
+            
+            // Aumentar o botão SIM a cada tentativa
+            const novoTamanho = 20 + (tentativas * 5);
+            const novoPadding = 15 + (tentativas * 5);
+            btnSim.style.fontSize = novoTamanho + 'px';
+            btnSim.style.padding = novoPadding + 'px ' + (novoPadding + 20) + 'px';
+            
+            // Diminuir o botão NÃO
+            const tamanhoNao = Math.max(10, 16 - tentativas * 2);
+            const paddingNao = Math.max(6, 12 - tentativas);
+            btnNao.style.fontSize = tamanhoNao + 'px';
+            btnNao.style.padding = paddingNao + 'px ' + (paddingNao + 10) + 'px';
+            
+            // Mover o botão NÃO para posição aleatória na TELA TODA
+            const btnRect = btnNao.getBoundingClientRect();
+            const maxX = window.innerWidth - btnRect.width - 20;
+            const maxY = window.innerHeight - btnRect.height - 20;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            btnNao.style.left = randomX + 'px';
+            btnNao.style.top = randomY + 'px';
+            
+            // Mudar texto do botão NÃO em loop
+            const textos = [
+                'Não',
+                'Naum sei...',
+                'Talvez!?',
+                'Naum mesmo!'
+            ];
+            
+            const indice = tentativas % textos.length;
+            btnNao.textContent = textos[indice];
+        }
+
+        // Função quando aceita
+        function aceitou() {
+            btnNao.style.display = 'none';
+            document.getElementById('buttonsContainer').style.display = 'none';
+            document.getElementById('message').style.display = 'block';
+            document.querySelector('h1').textContent = '❤️ AGORA É PRA SEMPRE! ❤️';
+            
+            // Criar confetes
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-10px';
+                    confetti.style.background = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3'][Math.floor(Math.random() * 4)];
+                    confetti.style.animationDelay = Math.random() + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+    </script>
+</body>
+</html>
